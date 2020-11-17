@@ -12,8 +12,8 @@ Fetching http://www.loyalbooks.com/book/Art-of-Public-Speaking/feed (4/119 feeds
 
 $ ls -1 output-folder/*mp3s
 ...
-2020-11-17/fi-mp3s
-2020-11-17/fr-mp3s
+output-folder/fi-mp3s
+output-folder/fr-mp3s
 ...
 ```
 
