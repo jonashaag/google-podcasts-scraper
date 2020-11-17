@@ -1,0 +1,34 @@
+#!/bin/bash -eu
+log() {
+  echo "$@" >&2
+}
+log2() {
+  echo -n "$@... " >&2
+}
+mkdir -p $1
+i=0
+nlangs=`wc -l langs-unique | cut -d ' ' -f1`
+for lang in `cat langs-unique`; do
+  let i=i+1
+  log2 "Fetching Google Podcasts for '$lang' ($i/$nlangs)"
+  ./fetch $lang > $1/$lang.html
+  egrep -o 'gstatic[^,]+,[^,]+,[^,]+,"(http[^,]+)"' $1/$lang.html \
+    | cut -d , -f4 | sed 's/"//g' > $1/$lang-feeds
+  nfeeds=`wc -l $1/$lang-feeds | cut -d ' ' -f1`
+  log "OK, found $nfeeds feeds"
+  j=0
+  for url in `sort $1/$lang-feeds | uniq | sort -R`; do
+    let j=j+1
+    log2 "Fetching $url ($j/$nfeeds feeds for lang '$lang')"
+    set +e
+    data=`wget -q "$url" -O - | egrep -o 'http[^"]+mp3' | sort | uniq | sort -R`
+    res=$?
+    set -e
+    if [ $res -eq 0 ]; then
+      echo "$data" >> $1/$lang-mp3s
+      log "OK, found " `echo "$data" | wc -l` "URLs"
+    else
+      log "No mp3 files found in $url"
+    fi
+  done
+done
