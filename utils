@@ -1,0 +1,22 @@
+set -eu
+
+log() {
+  echo "$@" >&2
+}
+
+log2() {
+  echo -n "$@... " >&2
+}
+
+fail() {
+  log "$@"
+  exit 1
+}
+
+usage() {
+  set +u
+  if [ "$4" = "-h" ] || [ "$4" = "--help" ] || [ $1 -ne $2 ]; then
+    fail "Usage: $0 $3"
+  fi
+  set -u
+}

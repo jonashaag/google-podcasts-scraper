@@ -1,4 +1,9 @@
 #!/bin/bash -eu
+
+. utils
+
+usage 1 $# "LANG" "$@"
+
 curl -s "https://podcasts.google.com/" \
   -H "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:82.0) Gecko/20100101 Firefox/82.0" \
   -H "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8" \

@@ -1,0 +1,8 @@
+#!/bin/bash -eu
+
+. utils
+
+usage 3 $# "BATCHFOLDER N DEST" "$@"
+
+
+sort "$1"/*-mp3s | uniq | shuf | head -n "$2" | xargs -n 1 ./dlmp3 "$3"
