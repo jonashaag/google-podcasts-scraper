@@ -1,8 +1,13 @@
 #!/bin/bash -eu
 
-. utils
+. "`dirname $0`"/utils
 
 usage 3 $# "BATCHFOLDER N DEST" "$@"
 
 
-sort "$1"/*-mp3s | uniq | shuf | head -n "$2" | xargs -n 1 ./dlmp3 "$3"
+if which tqdm-xargs >/dev/null 2>/dev/null; then
+  xargs="tqdm-xargs -t $2"
+else
+  $xargs="xargs -n 1"
+fi
+sort "$1"/*-mp3s | uniq | shuf | head -n "$2" | $xargs "$ROOT"/dlmp3 "$3"

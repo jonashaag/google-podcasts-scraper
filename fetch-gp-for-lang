@@ -1,6 +1,6 @@
 #!/bin/bash -eu
 
-. utils
+. `dirname $0`/utils
 
 usage 1 $# "LANG" "$@"
 

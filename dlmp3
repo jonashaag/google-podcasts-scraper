@@ -1,8 +1,8 @@
 #!/bin/bash -eu
 
-maxseconds=300
+maxseconds=180
 
-. utils
+. `dirname $0`/utils
 
 usage 2 $# "DEST URL" "$@"
 
@@ -12,11 +12,16 @@ mkdir -p "$1"
 slug=`echo "$2" | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9\.]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z`
 slug="$1/$slug"
 if [ -e $slug ]; then
-  log "File $1 already downloaded, skipping"
+  log "File $2 already downloaded, skipping"
 else
   log2 "Downloading "$2" to $slug"
   set +e
-  ffmpeg -loglevel 16 -i "$2" -t $maxseconds -c:a copy "$slug"
+  ffmpeg -loglevel 16 -nostdin -nostats -i "$2" -t $maxseconds -ac 1 -ab 128k "$slug"
+  ok=$?
   set -e
-  log "Done"
+  if [ $ok -eq 0 ]; then
+    log "Done"
+  else
+    log "Error"
+  fi
 fi

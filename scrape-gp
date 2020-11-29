@@ -1,16 +1,16 @@
 #!/bin/bash -eu
 
-. utils
+. "`dirname $0`"/utils
 
 usage 1 $# "BATCHFOLDER" "$@"
 
 mkdir -p "$1"
 i=0
-nlangs=`wc -l langs-unique | cut -d ' ' -f1`
-for lang in `cat langs-unique`; do
+nlangs=`wc -l "$ROOT"/langs-unique | cut -d ' ' -f1`
+for lang in `cat "$ROOT"/langs-unique`; do
   let i=i+1
   log2 "Fetching Google Podcasts for lang '$lang' ($i/$nlangs)"
-  ./fetch $lang > $1/$lang.html
+  "$ROOT"/fetch-gp-for-lang $lang > $1/$lang.html
   egrep -o 'gstatic[^,]+,[^,]+,[^,]+,"(http[^,]+)"' $1/$lang.html \
     | cut -d , -f4 | sed 's/"//g' > "$1"/$lang-feeds
   nfeeds=`wc -l "$1"/$lang-feeds | cut -d ' ' -f1`
