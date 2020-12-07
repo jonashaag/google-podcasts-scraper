@@ -11,17 +11,21 @@ mkdir -p "$1"
 # Stolen from https://gist.github.com/oneohthree/f528c7ae1e701ad990e6
 slug=`echo "$2" | iconv -t ascii//TRANSLIT | sed -E 's/[^a-zA-Z0-9\.]+/-/g' | sed -E 's/^-+|-+$//g' | tr A-Z a-z`
 slug="$1/$slug"
-if [ -e $slug ]; then
+if [ -e "$slug" ]; then
   log "File $2 already downloaded, skipping"
+elif [ -e "$slug.err" ]; then
+  log "File $2 already downloaded (with error), skipping"
 else
   log2 "Downloading "$2" to $slug"
   set +e
-  ffmpeg -loglevel 16 -nostdin -nostats -i "$2" -t $maxseconds -ac 1 -ab 128k "$slug"
+  out=`timeout 60s ffmpeg -loglevel 16 -nostdin -nostats -i "$2" -t $maxseconds -vn -ac 1 -ab 128k "$slug" 2>&1`
   ok=$?
   set -e
   if [ $ok -eq 0 ]; then
     log "Done"
   else
     log "Error"
+    echo "$out" > "$slug.err"
+    exit 1
   fi
 fi
